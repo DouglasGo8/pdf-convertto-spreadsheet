@@ -6,6 +6,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Component;
 
@@ -26,23 +27,38 @@ public class MySpringBootRouter extends RouteBuilder {
     onException(Exception.class)
             .log("${body}-${header.CamelFileName}");
 
-    final var folderToProcess = "email";
+    //final var folderToProcess = "in";
 
-    from("file://./input/" + folderToProcess + "?noop=true")
+   /*from("file://./in?noop=true")
             //.log("${header.CamelFileName}")
             .process(e -> {
               try {
                 var fileName = e.getIn().getHeader("CamelFileName", String.class);
-                var pdfParser = new PDFParser(new RandomAccessFile(new File("./input/" + folderToProcess + "/" + fileName), "r"));
+                var pdfParser = new PDFParser(new RandomAccessFile(new File("./in/" + fileName), "r"));
                 //
                 pdfParser.parse();
                 //
                 try (var cosDoc = pdfParser.getDocument()) {
                   try (var pdDoc = new PDDocument(cosDoc)) {
-                    try (var pw = new PrintWriter("./output/" +
-                            fileName.replace(".pdf", "") + ".txt", StandardCharsets.UTF_16)) {
-                      pw.println(new PDFTextStripper().getText(pdDoc).trim());
+                    if (pdDoc.getPages().getCount() > 1) {
+                      for (int i = 1; i <= pdDoc.getPages().getCount(); i++) {
+                        try (var pw = new PrintWriter("./out/" +
+                                fileName.replace(".pdf", "") + "_" + i + ".txt", StandardCharsets.UTF_16)) {
+                          var pdfTextStripper = new PDFTextStripper();
+                          pdfTextStripper.setStartPage(i);
+                          pdfTextStripper.setEndPage(i);
+                          pw.println(pdfTextStripper.getText(pdDoc).trim());
+                        }
+                      }
+
+                    } else {
+                      try (var pw = new PrintWriter("./out/" +
+                              fileName.replace(".pdf", "") + ".txt", StandardCharsets.UTF_16)) {
+                        pw.println(new PDFTextStripper().getText(pdDoc).trim());
+                      }
                     }
+
+
                   }
                 }
               } catch (Exception ex) {
@@ -52,7 +68,7 @@ public class MySpringBootRouter extends RouteBuilder {
             .log("Done Txt Generation....");
 
 
-    from("file://./output?noop=true&charset=UTF_16")
+    from("file://./out?noop=true&charset=UTF_16")
             .setHeader("fileNameAndExt", header("CamelFileName").regexReplaceAll(".txt", ".xml"))
             .split(body().tokenize("\n"), new SetAggregationStrategy()).streaming()
               .setProperty("tag", simple("tag_${header.CamelSplitIndex}++"))
@@ -61,10 +77,10 @@ public class MySpringBootRouter extends RouteBuilder {
             .transform(bodyAs(String.class).regexReplaceAll(",", ""))
             .transform(simple("<root>${body}</root>"))
             .setHeader(Exchange.FILE_NAME, header("fileNameAndExt"))
-            .to("file://./temp?charset=UTF_16")
-            .log("Done XML Generation....");
+            .to("file://./pout?charset=UTF_16")
+            .log("Done XML Generation....");*/
 
-    from("file://./output_xls?noop=true&charset=UTF_16")
+    from("file://./pout?noop=true&charset=UTF_16")
             .bean(MySpringBean::new)
             .log("Done Excel Generation");
 

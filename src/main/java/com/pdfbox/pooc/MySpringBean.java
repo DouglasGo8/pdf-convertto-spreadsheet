@@ -29,7 +29,7 @@ public class MySpringBean {
           @XPath("//tag_49/text()") String valor2) {
 
     //System.out.println(NrFC);
-    var excelFile = "./excel/LuccaBook.xlsx";
+    var excelFile = "./sheet/LuccaBook.xlsx";
     try {
 
       var fis = new FileInputStream(excelFile);
@@ -38,6 +38,7 @@ public class MySpringBean {
       var rowCount = sheet.getLastRowNum();
       var row = sheet.createRow(++rowCount);
       var col = 0;
+      var textToVerify = "REGIANE";
       //
       var cell = row.createCell(col);
       cell.setCellValue(rowCount); // Qtd Row
@@ -58,7 +59,7 @@ public class MySpringBean {
       cell.setCellValue(compFields.trim()); // Cod Verificacao
 
       cell = row.createCell(++col);
-      cell.setCellValue(razaoSocial1.toUpperCase().startsWith("CLIA") ?
+      cell.setCellValue(razaoSocial1.toUpperCase().startsWith(textToVerify) ?
               razaoSocial1 : razaoSocial2); // Razao Social
 
       cell = row.createCell(++col);
@@ -75,7 +76,7 @@ public class MySpringBean {
       cell.setCellValue(tomador); // Tomador
 
       cell = row.createCell(++col);
-      cell.setCellValue(razaoSocial1.toUpperCase().startsWith("CLIA") ? cpf1 : cpf2); // CPF
+      cell.setCellValue(razaoSocial1.toUpperCase().startsWith(textToVerify) ? cpf1 : cpf2); // CPF
 
       cell = row.createCell(++col);
       cell.setCellValue(discrim); // discrim
