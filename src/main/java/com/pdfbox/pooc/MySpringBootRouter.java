@@ -29,7 +29,7 @@ public class MySpringBootRouter extends RouteBuilder {
 
     //final var folderToProcess = "in";
 
-   /*from("file://./in?noop=true")
+    from("file://./in?noop=true")
             //.log("${header.CamelFileName}")
             .process(e -> {
               try {
@@ -43,14 +43,15 @@ public class MySpringBootRouter extends RouteBuilder {
                     if (pdDoc.getPages().getCount() > 1) {
                       for (int i = 1; i <= pdDoc.getPages().getCount(); i++) {
                         try (var pw = new PrintWriter("./out/" +
-                                fileName.replace(".pdf", "") + "_" + i + ".txt", StandardCharsets.UTF_16)) {
+                                fileName.replace(".pdf", "") +
+                                "_" + i + ".txt", StandardCharsets.UTF_16)) {
+                          //
                           var pdfTextStripper = new PDFTextStripper();
                           pdfTextStripper.setStartPage(i);
                           pdfTextStripper.setEndPage(i);
                           pw.println(pdfTextStripper.getText(pdDoc).trim());
                         }
                       }
-
                     } else {
                       try (var pw = new PrintWriter("./out/" +
                               fileName.replace(".pdf", "") + ".txt", StandardCharsets.UTF_16)) {
@@ -78,7 +79,7 @@ public class MySpringBootRouter extends RouteBuilder {
             .transform(simple("<root>${body}</root>"))
             .setHeader(Exchange.FILE_NAME, header("fileNameAndExt"))
             .to("file://./pout?charset=UTF_16")
-            .log("Done XML Generation....");*/
+            .log("Done XML Generation....");
 
     from("file://./pout?noop=true&charset=UTF_16")
             .bean(MySpringBean::new)
