@@ -29,7 +29,7 @@ public class MySpringBootRouter extends RouteBuilder {
 
     //final var folderToProcess = "in";
 
-    from("file://./in?noop=true")
+   /* from("file://./in?noop=true") // Listening this IN Directory
             //.log("${header.CamelFileName}")
             .process(e -> {
               try {
@@ -58,8 +58,6 @@ public class MySpringBootRouter extends RouteBuilder {
                         pw.println(new PDFTextStripper().getText(pdDoc).trim());
                       }
                     }
-
-
                   }
                 }
               } catch (Exception ex) {
@@ -79,7 +77,7 @@ public class MySpringBootRouter extends RouteBuilder {
             .transform(simple("<root>${body}</root>"))
             .setHeader(Exchange.FILE_NAME, header("fileNameAndExt"))
             .to("file://./pout?charset=UTF_16")
-            .log("Done XML Generation....");
+            .log("Done XML Generation....");*/
 
     from("file://./pout?noop=true&charset=UTF_16")
             .bean(MySpringBean::new)

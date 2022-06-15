@@ -29,7 +29,7 @@ public class MySpringBean {
           @XPath("//tag_49/text()") String valor2) {
 
     //System.out.println(NrFC);
-    var excelFile = "./sheet/LuccaBook.xlsx";
+    var excelFile = "./excel/LuccaBook.xlsx";
     try {
 
       var fis = new FileInputStream(excelFile);
